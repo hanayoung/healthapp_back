@@ -1,0 +1,5 @@
+db:
+  url: jdbc:mysql://112.175.114.57:3306/android?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+  username: root
+  password: vision9551
+  driver-class-name: com.mysql.cj.jdbc.Driver
