@@ -1,7 +1,10 @@
 package com.example.demo;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -30,6 +33,16 @@ public class Controller {
     public List<HrVo> getData(){
         List<HrVo> data = repository.getData();
         return data;
+    }
+
+    @PostMapping(value = "/image/upload")
+    public void insertImg(@RequestParam("file") MultipartFile file){
+        System.out.println("Connection from Android!!");
+        System.out.println("File "+file);
+        System.out.println("file "+file.getContentType());
+        UploadFile.uploadFile(file);
+
+//        repository.saveImg(file);
     }
 
 }

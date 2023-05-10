@@ -14,6 +14,7 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.projectlombok:lombok:1.18.26")
     runtimeOnly ("com.mysql:mysql-connector-j")
     implementation ("org.springframework.boot:spring-boot-starter-jdbc")
     testImplementation("org.springframework.boot:spring-boot-starter-test")

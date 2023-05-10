@@ -31,6 +31,8 @@ public class Repository {
         return hrVo;
     };
 
-
-
+//    public void saveImg(ImgVo imgVo) {
+//        String sql = "INSERT INTO img(uri) VALUES (?)";
+//        jdbcTemplate.update(sql,imgVo.getImgUri());
+//    }
 }
