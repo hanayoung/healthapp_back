@@ -22,7 +22,7 @@ public class UploadFile {
         private String storeFilename;   // 서버 내부에서 관리하는 파일명
 
         public static void uploadFile(MultipartFile file){
-                String uploadPath ="/Users/aoreo/Downloads";
+                String uploadPath ="/home/vision/and_test/upload";
                 String originalName = file.getOriginalFilename();
                 System.out.println(file.getContentType());
                 System.out.println("isEmpty  "+file.isEmpty());
