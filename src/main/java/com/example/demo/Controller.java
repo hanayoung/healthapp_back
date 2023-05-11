@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RequestMapping("api")
@@ -36,11 +37,11 @@ public class Controller {
     }
 
     @PostMapping(value = "/image/upload")
-    public void insertImg(@RequestParam("file") MultipartFile file){
+    public void insertImg(@RequestParam("file") MultipartFile file,HttpServletRequest request){
         System.out.println("Connection from Android!!");
         System.out.println("File "+file);
         System.out.println("file "+file.getContentType());
-        UploadFile.uploadFile(file);
+        UploadFile.uploadFile(file,request);
 
 //        repository.saveImg(file);
     }

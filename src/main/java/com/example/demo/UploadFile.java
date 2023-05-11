@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
-
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -21,8 +21,18 @@ public class UploadFile {
         private String uploadFilename;  // 작성자가 업로드한 파일명
         private String storeFilename;   // 서버 내부에서 관리하는 파일명
 
-        public static void uploadFile(MultipartFile file){
+        public static void uploadFile(MultipartFile file, HttpServletRequest request){
+
+                FileService fs = new FileService();
+
+                /* ***** */
+                String rootPath = request.getServletContext().getRealPath("/");
+                File targetDir = new File(rootPath);
+                if(!targetDir.exists()){
+                        targetDir.mkdirs();
+                }
                 String uploadPath ="/home/vision/and_test/upload";
+
                 String originalName = file.getOriginalFilename();
                 System.out.println(file.getContentType());
                 System.out.println("isEmpty  "+file.isEmpty());
@@ -32,15 +42,16 @@ public class UploadFile {
                 System.out.println("fileName  "+fileName);
                 String uuid = UUID.randomUUID().toString();
 
-//                String saveFileName = uploadPath + File.separator + uuid + "_" + fileName;
-                String saveFileName = uploadPath + File.separator + uuid + "_" + file.getOriginalFilename();
+                String saveFileName = rootPath+uploadPath + File.separator + uuid + "_" + fileName;
+//                String saveFileName = uploadPath + File.separator + uuid + "_" + file.getOriginalFilename();
                 System.out.println("saveFileName "+saveFileName);
                 Path savePath = Paths.get(saveFileName);
 
                 try{
 //                        file.transferTo(savePath.toFile());
 //                        Files.copy(file.getInputStream(), savePath);
-                        FileCopyUtils.copy(file.getInputStream(), new FileOutputStream(saveFileName));
+//                        FileCopyUtils.copy(file.getInputStream(), new FileOutputStream(saveFileName));
+                        fs.upload(file,"/data/upload", "test/");
                 } catch (IOException e) {
                         e.printStackTrace();
                         throw new RuntimeException(e);
