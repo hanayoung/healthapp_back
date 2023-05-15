@@ -3,6 +3,7 @@ package com.example.demo;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.apache.commons.io.IOUtils;
 import java.util.HashMap;
@@ -10,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -60,7 +63,8 @@ public class Controller {
 */
         String fileName = file.getOriginalFilename();
         String result = UploadFile.uploadFile(file,fileName);
-        if(result=="Success"){
+
+        if(result.equals("Success")){
             repository.saveImg(fileName);
         }
         /*FileService fs = new FileService();
@@ -74,12 +78,34 @@ public class Controller {
     }
 
 
+//    @GetMapping(
+//            value = "/image/download",
+//            produces = MediaType.IMAGE_JPEG_VALUE)
+//    public @ResponseBody byte[] getImageWithMediaType() throws IOException{
+//        InputStream in = getClass().getResourceAsStream("/data/upload/bfdd7ab5-ceb0-4c17-8ed3-161beabe0875_download.jpeg");
+//        return IOUtils.toByteArray(in);
+//    }
+
+
     @GetMapping(
             value = "/image/download",
             produces = MediaType.IMAGE_JPEG_VALUE)
-    public @ResponseBody byte[] getImageWithMediaType() throws IOException{
-        InputStream in = getClass().getResourceAsStream("/data/upload/bfdd7ab5-ceb0-4c17-8ed3-161beabe0875_download.jpeg");
-        return IOUtils.toByteArray(in);
+    public ResponseEntity<Resource> getItemImageByName() {
+        try {
+            String path = "/data/upload";
+            String fileName = "bfdd7ab5-ceb0-4c17-8ed3-161beabe0875_download.jpeg";
+            FileSystemResource resource = new FileSystemResource(path+"/"+fileName);
+            if (!resource.exists()) {
+                throw new RuntimeException();
+            }
+            HttpHeaders header = new HttpHeaders();
+            Path filePath = null;
+            filePath = Paths.get(path+fileName);
+            header.add("Content-Type", Files.probeContentType(filePath));
+            return new ResponseEntity<>(resource, header, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
     }
 
 }
