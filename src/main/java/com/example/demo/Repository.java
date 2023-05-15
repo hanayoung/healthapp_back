@@ -31,9 +31,9 @@ public class Repository {
         return hrVo;
     };
 
-    public void saveImg(String fileName) {
+    public void saveImg(String fileName,String user, String info) {
         System.out.println("here!");
-        String sql = "INSERT INTO img(name) VALUES (?)";
-        jdbcTemplate.update(sql,fileName);
+        String sql = "INSERT INTO img(name,user,info) VALUES (?)";
+        jdbcTemplate.update(sql,fileName,user,info);
     }
 }
