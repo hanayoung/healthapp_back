@@ -1,0 +1,5 @@
+db:
+  url: jdbc:mysql://127.0.0.1:3306/new_schema?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+  username: root
+  password: gksdkdud
+  driver-class-name: com.mysql.cj.jdbc.Driver

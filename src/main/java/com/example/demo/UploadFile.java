@@ -2,10 +2,14 @@ package com.example.demo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,40 +22,44 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 public class UploadFile {
-        private String uploadFilename;  // 작성자가 업로드한 파일명
-        private String storeFilename;   // 서버 내부에서 관리하는 파일명
-
-        public static void uploadFile(MultipartFile file, HttpServletRequest request){
-
+        public static String uploadFile(MultipartFile file,String fileName){
+        /*      Map<String, String> result = new HashMap<>();
+                MultipartFile file = request.getFile("test_file");
                 FileService fs = new FileService();
+                try {
+                        result = fs.upload(file,"/data/upload", "test");
+                        System.out.println("FILE_PATH" + result.get("filePath"));
+                } catch (Exception e) {
+                        e.printStackTrace();
+                }*/
 
-                /* ***** */
-                String rootPath = request.getServletContext().getRealPath("/");
-                File targetDir = new File(rootPath);
+                System.out.println("@@@ IN @@@");
+
+                // String rootPath = request.getServletContext().getRealPath("/upload");
+                String uploadPath ="/data/upload";
+                File targetDir = new File(uploadPath);
                 if(!targetDir.exists()){
                         targetDir.mkdirs();
                 }
-                String uploadPath ="/home/vision/and_test/upload";
 
-                String originalName = file.getOriginalFilename();
                 System.out.println(file.getContentType());
                 System.out.println("isEmpty  "+file.isEmpty());
-                String fileName = originalName.substring(originalName.lastIndexOf("\\")+1);
 
                 System.out.println("originalName  "+file.getOriginalFilename());
-                System.out.println("fileName  "+fileName);
-                String uuid = UUID.randomUUID().toString();
 
-                String saveFileName = rootPath+uploadPath + File.separator + uuid + "_" + fileName;
-//                String saveFileName = uploadPath + File.separator + uuid + "_" + file.getOriginalFilename();
+                // String saveFileName = rootPath + File.separator + uuid + "_" + fileName;
+                // String saveFileName = uploadPath + File.separator + uuid + "_" + file.getOriginalFilename();
+                String saveFileName = uploadPath + File.separator + fileName;
+                System.out.println("fileName " +fileName);
                 System.out.println("saveFileName "+saveFileName);
                 Path savePath = Paths.get(saveFileName);
 
                 try{
-//                        file.transferTo(savePath.toFile());
+                        file.transferTo(savePath.toFile());
+                        return "Success";
 //                        Files.copy(file.getInputStream(), savePath);
 //                        FileCopyUtils.copy(file.getInputStream(), new FileOutputStream(saveFileName));
-                        fs.upload(file,"/data/upload", "test/");
+                        // fs.upload(file,"/data/upload", "test/");
                 } catch (IOException e) {
                         e.printStackTrace();
                         throw new RuntimeException(e);
