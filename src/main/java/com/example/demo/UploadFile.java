@@ -22,7 +22,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 public class UploadFile {
-        public static String uploadFile(MultipartFile file,String fileName){
+        public static String uploadFile(MultipartFile file,String fileName,String userName){
         /*      Map<String, String> result = new HashMap<>();
                 MultipartFile file = request.getFile("test_file");
                 FileService fs = new FileService();
@@ -36,7 +36,7 @@ public class UploadFile {
                 System.out.println("@@@ IN @@@");
 
                 // String rootPath = request.getServletContext().getRealPath("/upload");
-                String uploadPath ="/data/upload";
+                String uploadPath ="/data/upload/"+userName;
                 File targetDir = new File(uploadPath);
                 if(!targetDir.exists()){
                         targetDir.mkdirs();

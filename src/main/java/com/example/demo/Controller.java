@@ -6,9 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.apache.commons.io.IOUtils;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -19,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.UUID;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.MultipartRequest;
@@ -57,10 +55,13 @@ public class Controller {
     public void insertImg(ImgVo imgVo){
         MultipartFile file = imgVo.getFile();
         System.out.println("file "+file);
+
         String user = imgVo.getUser();
+        System.out.println("user "+user);
         String info = imgVo.getInfo();
+        System.out.println("info "+info);
         String fileName = file.getOriginalFilename();
-        String result = UploadFile.uploadFile(file,fileName);
+        String result = UploadFile.uploadFile(file,fileName,user);
 
         if(result.equals("Success")){
             repository.saveImg(fileName,user,info);
@@ -70,22 +71,26 @@ public class Controller {
     @GetMapping(
             value = "/image/download",
             produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<Resource> getItemImageByName() {
+    public ResponseEntity<Resource> getItemImageByName(String userName) {
+        HttpHeaders header = new HttpHeaders();
+        FileSystemResource resource = null;
         try {
+            List<ImgVo> list = repository.getImgData(userName);
             String path = "/data/upload";
-            String fileName = "bfdd7ab5-ceb0-4c17-8ed3-161beabe0875_download.jpeg";
-            FileSystemResource resource = new FileSystemResource(path+"/"+fileName);
-            if (!resource.exists()) {
-                throw new RuntimeException();
+            if(list!=null){
+                String fileName = list.get(0).getFileName();
+                resource = new FileSystemResource(path+"/"+userName+"/"+fileName);
+                if (!resource.exists()) {
+                    throw new RuntimeException();
+                }
+                Path filePath = null;
+                filePath = Paths.get(path+"/"+userName+"/"+fileName);
+                header.add("Content-Type", Files.probeContentType(filePath));
             }
-            HttpHeaders header = new HttpHeaders();
-            Path filePath = null;
-            filePath = Paths.get(path+fileName);
-            header.add("Content-Type", Files.probeContentType(filePath));
-            return new ResponseEntity<>(resource, header, HttpStatus.OK);
-        } catch (Exception e) {
-            throw new RuntimeException();
+        }catch (Exception e){
+            System.out.println("exception "+e.getLocalizedMessage());
         }
+        return new ResponseEntity<>(resource, header, HttpStatus.OK);
     }
 
 }
