@@ -1,4 +1,4 @@
-package kr.visioninside.hongneung.file;
+package com.example.demo;
 
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.servlet.view.AbstractView;
