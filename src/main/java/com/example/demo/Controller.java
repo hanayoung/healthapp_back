@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import org.apache.commons.io.IOUtils;
 
 import java.util.*;
 
@@ -52,45 +51,55 @@ public class Controller {
     }
 
     @PostMapping(value = "/image/upload")
-    public void insertImg(ImgVo imgVo){
+    public ImgVo insertImg(ImgVo imgVo){ // List로 바꿔야함
         MultipartFile file = imgVo.getFile();
         System.out.println("file "+file);
-
+        System.out.println("fileName "+file.getName());
         String user = imgVo.getUser();
         System.out.println("user "+user);
         String info = imgVo.getInfo();
         System.out.println("info "+info);
         String fileName = file.getOriginalFilename();
+        if(fileName.contains("'")){
+            System.out.println("there is ' in fileName");
+        }
+        fileName = fileName.replaceAll("\\\"","");
         String result = UploadFile.uploadFile(file,fileName,user);
-
         if(result.equals("Success")){
+            user = user.replaceAll("\\\"","");
+            info = info.replaceAll("\\\"","");
             repository.saveImg(fileName,user,info);
         }
+        return imgVo;
     }
 
     @GetMapping(
-            value = "/image/download",
+            value = "/image/download/{user}",
             produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<Resource> getItemImageByName(String userName) {
-        HttpHeaders header = new HttpHeaders();
-        FileSystemResource resource = null;
+    public ResponseEntity<Resource> getItemImageByName(@PathVariable String user) {
         try {
-            List<ImgVo> list = repository.getImgData(userName);
+            HttpHeaders header = new HttpHeaders();
+            FileSystemResource resource = null;
+            List<ImgVo> list = repository.getImgData(user);
             String path = "/data/upload";
             if(list!=null){
                 String fileName = list.get(0).getFileName();
-                resource = new FileSystemResource(path+"/"+userName+"/"+fileName);
+                resource = new FileSystemResource(path+"/"+user+"/"+fileName);
                 if (!resource.exists()) {
                     throw new RuntimeException();
                 }
                 Path filePath = null;
-                filePath = Paths.get(path+"/"+userName+"/"+fileName);
+                filePath = Paths.get(path+"/"+user+"/"+fileName);
                 header.add("Content-Type", Files.probeContentType(filePath));
+                return new ResponseEntity<>(resource, header, HttpStatus.OK);
+            }
+            else{
+                System.out.println("list null  ");
+                throw new RuntimeException();
             }
         }catch (Exception e){
             System.out.println("exception "+e.getLocalizedMessage());
+            throw new RuntimeException();
         }
-        return new ResponseEntity<>(resource, header, HttpStatus.OK);
     }
-
 }

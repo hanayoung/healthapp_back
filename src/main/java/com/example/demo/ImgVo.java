@@ -23,8 +23,6 @@ public class ImgVo {
         return fileName;
     }
 
-
-
     public String getUser() {
         return user;
     }

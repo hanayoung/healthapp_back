@@ -1,8 +1,11 @@
 package com.example.demo;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 @org.springframework.stereotype.Repository
@@ -32,15 +35,17 @@ public class Repository {
     };
 
     public void saveImg(String fileName,String user, String info) {
-        System.out.println("here!");
-        String sql = "INSERT INTO img(name,user,info) VALUES (?)";
+        String sql = "INSERT INTO img(name,user,info) VALUES (?,?,?)";
         jdbcTemplate.update(sql,fileName,user,info);
     }
 
     public List<ImgVo> getImgData(String userName){
-        String tmp = userName;
-        String sql = "SELECT name, user, info FROM img WHERE user=tmp";
-        return jdbcTemplate.query(sql,imgVoRowMapper);
+        String sql = "SELECT name, user, info FROM img WHERE user = ?";
+        return jdbcTemplate.query(sql, new PreparedStatementSetter(){
+            public void setValues(PreparedStatement preparedStatement) throws SQLException {
+                preparedStatement.setString(1, userName); // Assuming 'userName' is the variable containing the user name value
+            }
+        },imgVoRowMapper);
     }
 
     public RowMapper<ImgVo> imgVoRowMapper = (resultSet, rowNum) -> {
